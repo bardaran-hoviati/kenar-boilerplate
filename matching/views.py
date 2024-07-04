@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from accounts import models as account_models
 from addon.models import Post
 from accounts import serializers as account_serializers
+from matching import models as matching_models
 from .models import Transaction
 from .serializers import TransactionSerializer
 from survey.models import Survey
@@ -96,51 +97,53 @@ class SetVerifiersView(APIView):
     def post(self, request, post_token):
         try:
             post = account_models.Post.objects.get(divar_post_id=post_token)
-        except account_models.Post.DoesNotExist:
-            return Response("error: Post not found", status=status.HTTP_404_NOT_FOUND)
-        try:
             selected_verifiers = request.data["selected_verifiers"]
             verifiers = account_models.Verifier.objects.filter(id__in=selected_verifiers)
             for verifier in verifiers:
-                post.verifiers.add(verifier)
+                try:
+                    post.verifiers.add(verifier)
+                except Exception as e:
+                    logger.error(f"Error adding verifier to post in SetVerifiersView: {e}")
 
             post.save()
             return Response(status=status.HTTP_200_OK)
+        except account_models.Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"set verification error {e}")
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SetVerifierView(APIView):
-    def get(self, request, post_token, verifier_id):
-        
-        oauth_session = OAuthSession(
-            post_token=post_token,
-            verifier_id=verifier_id,
-        )
-        request.session[settings.OAUTH_SESSION_KEY] = oauth_session.model_dump(exclude_none=True)
-        
-        APP_HOST = os.environ.get("APP_HOST", "0.0.0.0")
-        APP_BASE_URL = "https://" + APP_HOST
-        
-        kenar_client = Client(ClientConfig(
-            app_slug=os.environ.get("KENAR_APP_SLUG"),
-            api_key=os.environ.get("KENAR_API_KEY"),
-            oauth_secret=os.environ.get("KENAR_OAUTH_SECRET"),
-            oauth_redirect_url=APP_BASE_URL + "/matching/setVerifierOauth",
-            )
-        )
-        
-        oauth_scopes = [
-            Scope(resource_type=OauthResourceType.USER_PHONE),
-        ]
+class SelectVerifierView(APIView):
+    def get(self, request, post_token):
+        try:
+            post = account_models.Post.objects.get(divar_post_id=post_token)
+        except account_models.Post.DoesNotExist:
+            return Response("error: Post not found", status=status.HTTP_404_NOT_FOUND)
+        verifiers = post.selected_verifiers.all()
+        serializer = account_serializers.VerifierSerializer(verifiers, many=True)
+        return Response(data={"verifiers": serializer.data, "post_token": post_token}, status=status.HTTP_200_OK)
 
-        oauth_url = kenar_client.oauth.get_oauth_redirect(
-            scopes=oauth_scopes,
-            state=oauth_session.state,
+    def post(self, request, post_token):
+        try:
+            post = account_models.Post.objects.get(divar_post_id=post_token)
+
+            verifier_id = request.data.get("verifier_id", -1)
+            user_id = request.data.get("user_id", -1)
+
+            verifier = account_models.Verifier.objects.get(id=verifier_id)
+            user = account_models.User.objects.get(id=user_id)
+        except account_models.Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        except account_models.Verifier.DoesNotExist:
+            return Response({"error": "Verifier not found"}, status=status.HTTP_404_NOT_FOUND)
+        except account_models.User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        matching_models.VerificationRequest.objects.create(
+            seller=post.seller, verifier=verifier, post=post, claimed_buyer=user, amount=69.5
         )
-
-        return redirect(oauth_url)
-
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+      
 
 class SetVerifiersView(APIView):
     def post(self, request, post_token):
@@ -160,11 +163,6 @@ class SetVerifiersView(APIView):
             logger.error(f"set verification error {e}")
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class SetVerifierOauthView(APIView):
-    def get(self, request, post_token, verifier_id):
-        oauth_session = OAuthSession(**request.session.get(settings.OAUTH_SESSION_KEY))
-        logger.info(f"sep{oauth_session.verifier_id} {oauth_session.post_token}")
-
 
 def add_addons(access_token, post_token, verifiers):
     addons = []
@@ -176,25 +174,26 @@ def add_addons(access_token, post_token, verifiers):
             has_indicator=False,
             label="انتخاب",
             has_divider=True,
-            link=f"https://salsa.darkube.app/select-verifier/{post_token}?verifier-id={verifiers[i].pk}",
+            link=f"https://salsa.darkube.app/accounts/?post_token={post_token}&verifier_id={verifiers[i].pk}",
             padded=True,
             icon=Icon(icon_name=IconName.ADD),
-            )
+        )
         )
     addons.append(
         WideButtonBar(
             button=WideButtonBar.Button(
-                title="گزینه های بیشتر ..." if len(verifiers)>3 else "لیست کامل", link="https://salsa.darkube.app/select-verifier/{post_token}"
+                title="گزینه های بیشتر ..." if len(verifiers) > 3 else "لیست کامل",
+                link=f"https://salsa.darkube.app/accounts/?post_token={post_token}"
             ),
         )
     )
 
     resp = kenar_client.addon.create_post_addon(
-            access_token=access_token,
-            data=CreatePostAddonRequest(
-                token=post_token,
-                widgets=addons,
-            ),
-        )
-    
+        access_token=access_token,
+        data=CreatePostAddonRequest(
+            token=post_token,
+            widgets=addons,
+        ),
+    )
+
     logger.info(resp)
