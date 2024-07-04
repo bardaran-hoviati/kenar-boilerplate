@@ -244,7 +244,7 @@ class FakeView(APIView):
 
         wide_button_bar = WideButtonBar(
             button=WideButtonBar.Button(
-                title="به سمت سایت شما", link="https://salsa.darkube.app"
+                title="به سمت سایت شما", link="https://salsa.darkube.app/matching/setVerifier/1/2"
             ),
         )
         resp = kenar_client.addon.create_post_addon(
