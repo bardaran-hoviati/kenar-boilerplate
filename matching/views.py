@@ -106,7 +106,7 @@ class SetVerifiersView(APIView):
                     logger.error(f"Error adding verifier to post in SetVerifiersView: {e}")
 
             post.save()
-            add_addons(post.seller.user.oauth, post_token, list(post.verifiers.all()))
+            add_addons(post.seller.user.oauth, post_token, list(post.selected_verifiers.all()))
             return Response(status=status.HTTP_200_OK)
         except account_models.Post.DoesNotExist:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
