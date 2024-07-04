@@ -89,7 +89,7 @@ def oauth_callback(request):
             oauth.save()
             base_url = settings.FRONT_END_URL
 
-            url = f"{base_url}set-verifiers/?{post.token}"
+            url = f"{base_url}set-verifiers/{post.token}"
             return redirect(url)
 
         elif oauth_session.type == OAuthSessionType.CHAT.value:
