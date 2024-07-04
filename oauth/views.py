@@ -87,13 +87,9 @@ def oauth_callback(request):
 
         if oauth_session.type == OAuthSessionType.POST.value:
             oauth.save()
-            base_url = reverse("fake-view")
-            query_string = urlencode({
-                "state": oauth_session.state,
-                "access_token": oauth.access_token,
-                "post_token": post.token
-                })
-            url = f"{base_url}?{query_string}"
+            base_url = settings.FRONT_END_URL
+
+            url = f"{base_url}set-verifiers/{post.token}"
             return redirect(url)
 
         elif oauth_session.type == OAuthSessionType.CHAT.value:
@@ -182,7 +178,7 @@ class FakeView(APIView):
             #image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoY3USrSPdY4jq7pzu9nYNPWwuxEv0Dh_K_w&s",
             label="لیبل",
             has_divider=True,
-            link="https://www.test.com",
+            link="https://salsa.darkube.app",
             padded=True,
             icon=Icon(icon_name=IconName.ADD),
         )
@@ -243,12 +239,12 @@ class FakeView(APIView):
             has_divider=True,
             has_arrow=True,
             icon=Icon(icon_name=IconName.INFO),
-            link="https://www.test.com",
+            link="https://salsa.darkube.app",
         )
 
         wide_button_bar = WideButtonBar(
             button=WideButtonBar.Button(
-                title="به سمت سایت شما", link="https://www.test.com"
+                title="به سمت سایت شما", link="https://salsa.darkube.app"
             ),
         )
         resp = kenar_client.addon.create_post_addon(
