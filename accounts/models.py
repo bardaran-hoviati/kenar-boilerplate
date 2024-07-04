@@ -13,7 +13,7 @@ class TimestampModel(models.Model):
 class User(TimestampModel):
     username = models.CharField(max_length=50, null=True)
     divar_user_phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
-    oauth = models.ForeignKey(to=oauth_models.OAuth, on_delete=models.CASCADE)
+    oauth = models.ForeignKey(to=oauth_models.OAuth, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Seller(TimestampModel):
