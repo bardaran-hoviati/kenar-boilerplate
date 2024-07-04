@@ -150,7 +150,7 @@ OAUTH_SESSION_KEY = "oauth_session"
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-FRONT_END_URL = "shalsha.darkube.app/"
+FRONT_END_URL = "https://shalsha.darkube.app/"
 
 divar_kenar_client_conf = ClientConfig(
     app_slug=os.environ.get("KENAR_APP_SLUG"),
