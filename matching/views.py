@@ -129,7 +129,7 @@ class SelectVerifierView(APIView):
             post = account_models.Post.objects.get(divar_post_id=post_token)
 
             verifier_id = request.data.get("verifier_id", -1)
-            user_id = request.data.get("user_id", -1)
+            user_id = request.data.get("user_id", -1) # this should be passed from redirector after oauth TODO
 
             verifier = account_models.Verifier.objects.get(id=verifier_id)
             user = account_models.User.objects.get(id=user_id)
