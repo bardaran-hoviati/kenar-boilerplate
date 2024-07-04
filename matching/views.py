@@ -61,7 +61,8 @@ class SetVerifiersView(APIView):
         except Exception as e:
             logger.error(f"set verification error {e}")
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 def add_addons(access_token, post_token, verifiers):
     addons = []
     kenar_client = get_divar_kenar_client()
@@ -72,25 +73,26 @@ def add_addons(access_token, post_token, verifiers):
             has_indicator=False,
             label="انتخاب",
             has_divider=True,
-            link=f"https://salsa.darkube.app/select-verifier/{post_token}?verifier-id={verifiers[i].pk}",
+            link=f"https://salsa.darkube.app/accounts/?post_token={post_token}&verifier_id={verifiers[i].pk}",
             padded=True,
             icon=Icon(icon_name=IconName.ADD),
-            )
+        )
         )
     addons.append(
         WideButtonBar(
             button=WideButtonBar.Button(
-                title="گزینه های بیشتر ..." if len(verifiers)>3 else "لیست کامل", link="https://salsa.darkube.app/select-verifier/{post_token}"
+                title="گزینه های بیشتر ..." if len(verifiers) > 3 else "لیست کامل",
+                link=f"https://salsa.darkube.app/accounts/?post_token={post_token}"
             ),
         )
     )
 
     resp = kenar_client.addon.create_post_addon(
-            access_token=access_token,
-            data=CreatePostAddonRequest(
-                token=post_token,
-                widgets=addons,
-            ),
-        )
-    
+        access_token=access_token,
+        data=CreatePostAddonRequest(
+            token=post_token,
+            widgets=addons,
+        ),
+    )
+
     logger.info(resp)
