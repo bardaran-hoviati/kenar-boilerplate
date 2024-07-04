@@ -101,7 +101,7 @@ class SetVerifiersView(APIView):
             verifiers = account_models.Verifier.objects.filter(id__in=selected_verifiers)
             for verifier in verifiers:
                 try:
-                    post.verifiers.add(verifier)
+                    post.selected_verifiers.add(verifier)
                 except Exception as e:
                     logger.error(f"Error adding verifier to post in SetVerifiersView: {e}")
 
