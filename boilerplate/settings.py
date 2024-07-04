@@ -31,7 +31,7 @@ APP_BASE_URL = "https://" + APP_HOST
 ALLOWED_HOSTS = [APP_HOST, "localhost", "127.0.0.1", "*"]
 
 CORS_ALLOWED_ORIGINS = ["https://localhost", "https://0.0.0.0", "https://shalsha.darkube.app","http://shalsha.darkube.app"]
-# CSRF_TRUSTED_ORIGINS = ["http://"]
+CSRF_TRUSTED_ORIGINS = ["https://localhost", "https://0.0.0.0", "https://salsa.darkube.app","http://salsa.darkube.app", "https://shalsha.darkube.app","http://shalsha.darkube.app"]
 
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
 DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
@@ -64,7 +64,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
-    #"django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
