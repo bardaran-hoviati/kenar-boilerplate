@@ -36,7 +36,6 @@ from kenar import (
     WideButtonBar,
 )
 
-
 from oauth.schemas import OAuthSession, OAuthSessionType
 from boilerplate import settings
 from kenar.app import Scope
@@ -59,20 +58,21 @@ class GetVerifiersView(APIView):
         serializer = account_serializers.VerifierSerializer(verifiers, many=True)
         return Response(data={"verifiers": serializer.data}, status=status.HTTP_200_OK)
 
+
 class VerifierView(APIView):
     def get(self, request):
         transaction_list = Transaction.objects.filter(verifier=1)
         serializer = TransactionSerializer(transaction_list, many=True)
         return Response(data={"transaction": serializer.data})
-    
+
     def post(self, request):
         transaction_id = request.data.get('transaction_id')
         transaction = get_object_or_404(Transaction, pk=transaction_id)
-        
+
         # if it is not PENDING (.aka 1)
-        if transaction.status != 1: 
+        if transaction.status != 1:
             return Response(data={"error": "not valid"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         approval = request.data.get('approval')
         if approval == 'approved':
             transaction.status = 3
@@ -84,14 +84,14 @@ class VerifierView(APIView):
             transaction.save()
         else:
             return Response(data={"error": "not valid"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        buyer_survey = Survey.objects.create(side=1, transaction=transaction, target_verifier=transaction.verifier, rating_user=transaction.buyer)
-        seller_survey = Survey.objects.create(side=2, transaction=transaction, target_verifier=transaction.verifier, rating_user=transaction.seller.user)
 
+        buyer_survey = Survey.objects.create(side=1, transaction=transaction, target_verifier=transaction.verifier,
+                                             rating_user=transaction.buyer)
+        seller_survey = Survey.objects.create(side=2, transaction=transaction, target_verifier=transaction.verifier,
+                                              rating_user=transaction.seller.user)
 
         return Response(data={"message": "Done"})
 
-        
 
 class SetVerifiersView(APIView):
     def post(self, request, post_token):
@@ -114,6 +114,7 @@ class SetVerifiersView(APIView):
             logger.error(f"set verification error {e}")
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class SelectVerifierView(APIView):
     def get(self, request, post_token):
         try:
@@ -129,7 +130,7 @@ class SelectVerifierView(APIView):
             post = account_models.Post.objects.get(divar_post_id=post_token)
 
             verifier_id = request.data.get("verifier_id", -1)
-            user_id = request.data.get("user_id", -1) # this should be passed from redirector after oauth TODO
+            user_id = request.data.get("user_id", -1)  # this should be passed from redirector after oauth TODO
 
             verifier = account_models.Verifier.objects.get(id=verifier_id)
             user = account_models.User.objects.get(id=user_id)

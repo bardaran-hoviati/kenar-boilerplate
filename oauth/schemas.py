@@ -17,7 +17,6 @@ class OAuthSession(BaseModel):
     type: OAuthSessionType
     callback_url: Optional[AnyUrl] = None
     post_token: str
-    verifier_id: Optional[int] = None
     chat_id: Optional[UUID] = None
     verifier_id: Optional[int] = 0
 
