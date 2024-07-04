@@ -153,7 +153,7 @@ def add_addons(access_token, post_token, verifiers):
     for i in range(min(3, len(verifiers))):
         addons.append(EventRow(
             title=f"{verifiers[i].firstname} {verifiers[i].lastname}",
-            subtitle=verifiers[i].rate,
+            subtitle=str(verifiers[i].rate),
             has_indicator=False,
             label="انتخاب",
             has_divider=True,
