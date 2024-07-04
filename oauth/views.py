@@ -89,7 +89,9 @@ def oauth_callback(request):
 
         if oauth_session.type == OAuthSessionType.POST.value:
             phone = kenar_client.finder.get_user(data=GetUserRequest(), access_token=oauth.access_token).phone_numbers[0]
-            user, created = accounts_models.User.objects.get_or_create(divar_user_phone=phone, oauth=oauth)
+            user, created = accounts_models.User.objects.get_or_create(divar_user_phone=phone)
+            user.oauth = oauth
+            user.save()
             if created:
                 accounts_models.Seller.objects.create(user=user)
             accounts_models.Post.objects.get_or_create(divar_post_id=post.token, defaults={"seller": user.seller})
@@ -98,14 +100,24 @@ def oauth_callback(request):
 
         elif oauth_session.type == OAuthSessionType.PHONE.value:
             phone = kenar_client.finder.get_user(data=GetUserRequest(), access_token=oauth.access_token).phone_numbers[0]
-            accounts_models.User.objects.get_or_create(divar_user_phone=phone, oauth=oauth)
+            user, created = accounts_models.User.objects.get_or_create(divar_user_phone=phone)
+            user.oauth = oauth
+            user.save()
+
             url = f"{settings.FRONT_END_URL}matching/select_verifier/{post.token}"
 
             if oauth_session.verifier_id:
                 query_string = urlencode({
+                    "user_id": user.id,
                     "verifier_id": oauth_session.verifier_id
                     })
-                url = f"{url}?{query_string}"
+            else:
+                query_string = urlencode({
+                    "user_id": user.id,
+                    "verifier_id": oauth_session.verifier_id
+                })
+
+            url = f"{url}?{query_string}"
 
             return redirect(url)
 
