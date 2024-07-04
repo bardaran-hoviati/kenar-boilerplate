@@ -163,7 +163,7 @@ class SetVerifiersView(APIView):
 class SetVerifierOauthView(APIView):
     def get(self, request, post_token, verifier_id):
         oauth_session = OAuthSession(**request.session.get(settings.OAUTH_SESSION_KEY))
-        logger.info(f"sep{oauth_session.verifier_id}")
+        logger.info(f"sep{oauth_session.verifier_id} {oauth_session.post_token}")
 
 
 def add_addons(access_token, post_token, verifiers):
