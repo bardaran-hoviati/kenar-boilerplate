@@ -49,11 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 class GetVerifiersView(APIView):
-    def get(self, request, post_token):
-        try:
-            post = account_models.Post.objects.get(divar_post_id=post_token)
-        except account_models.Post.DoesNotExist:
-            return Response("error: Post not found", status=status.HTTP_404_NOT_FOUND)
+    def get(self, request):
         verifiers = account_models.Verifier.objects.all()
         serializer = account_serializers.VerifierSerializer(verifiers, many=True)
         return Response(data={"verifiers": serializer.data}, status=status.HTTP_200_OK)
