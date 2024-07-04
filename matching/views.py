@@ -144,25 +144,6 @@ class SelectVerifierView(APIView):
             seller=post.seller, verifier=verifier, post=post, claimed_buyer=user, amount=69.5
         )
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
-      
-
-class SetVerifiersView(APIView):
-    def post(self, request, post_token):
-        try:
-            post = account_models.Post.objects.get(divar_post_id=post_token)
-        except account_models.Post.DoesNotExist:
-            return Response("error: Post not found", status=status.HTTP_404_NOT_FOUND)
-        try:
-            selected_verifiers = request.data["selected_verifiers"]
-            verifiers = account_models.Verifier.objects.filter(id__in=selected_verifiers)
-            for verifier in verifiers:
-                post.verifiers.add(verifier)
-
-            post.save()
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"set verification error {e}")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def add_addons(access_token, post_token, verifiers):
