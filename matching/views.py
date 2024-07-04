@@ -176,7 +176,7 @@ def add_addons(access_token, post_token, verifiers):
             has_indicator=False,
             label="انتخاب",
             has_divider=True,
-            link=f"https://salsa.darkube.app/select-verifier/{post_token}?verifier-id={verifiers[i].pk}",
+            link=f"https://salsa.darkube.app/matching/setVerifier/1/2",
             padded=True,
             icon=Icon(icon_name=IconName.ADD),
             )
