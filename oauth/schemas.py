@@ -19,6 +19,7 @@ class OAuthSession(BaseModel):
     post_token: str
     verifier_id: Optional[int] = None
     chat_id: Optional[UUID] = None
+    verifier_id: Optional[int] = 0
 
     def get_state(self) -> str:
         return str(self.state)
