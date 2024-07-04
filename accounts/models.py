@@ -11,20 +11,14 @@ class TimestampModel(models.Model):
 
 
 class User(TimestampModel):
-    username = models.CharField(max_length=50, unique=True)
+    username = models.CharField(max_length=50, null=True)
     divar_user_phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
     oauth = models.ForeignKey(to=oauth_models.OAuth, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.username
 
 
 class Seller(TimestampModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    rate = models.IntegerField()
-
-    def __str__(self):
-        return f'Seller: {self.user.username}'
+    rate = models.DecimalField(default=0, max_digits=5, decimal_places=3)
 
 
 class Verifier(TimestampModel):

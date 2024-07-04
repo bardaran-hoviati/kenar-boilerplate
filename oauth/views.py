@@ -21,7 +21,9 @@ from boilerplate.clients import get_divar_kenar_client
 from chat.models import Chat
 from oauth.models import OAuth
 from oauth.schemas import OAuthSession, OAuthSessionType
-from kenar import CreatePostAddonRequest
+from kenar import CreatePostAddonRequest, GetUserRequest
+
+from accounts import models as accounts_models
 
 from kenar import (
     CreatePostAddonRequest,
@@ -86,39 +88,25 @@ def oauth_callback(request):
         oauth.save()
 
         if oauth_session.type == OAuthSessionType.POST.value:
-            oauth.save()
-            base_url = settings.FRONT_END_URL
-
-            url = f"{base_url}set-verifiers/?{post.token}"
+            phone = kenar_client.finder.get_user(data=GetUserRequest(), access_token=oauth.access_token).phone_numbers[0]
+            user, created = accounts_models.User.objects.get_or_create(divar_user_phone=phone, oauth=oauth)
+            if created:
+                accounts_models.Seller.objects.create(user=user)
+            accounts_models.Post.objects.get_or_create(divar_post_id=post.token, defaults={"seller": user.seller})
+            url = f"{settings.FRONT_END_URL}set-verifiers/{post.token}"
             return redirect(url)
 
-        elif oauth_session.type == OAuthSessionType.CHAT.value:
-            chat = Chat.objects.get(id=oauth_session.chat_id)
-            oauth.chat = chat
-            oauth.save()
+        elif oauth_session.type == OAuthSessionType.PHONE.value:
+            phone = kenar_client.finder.get_user(data=GetUserRequest(), access_token=oauth.access_token).phone_numbers[0]
+            accounts_models.User.objects.get_or_create(divar_user_phone=phone, oauth=oauth)
+            url = f"{settings.FRONT_END_URL}matching/select_verifier/{post.token}"
 
-            logger.error(access_token_response.access_token)
-            logger.error(SetNotifyChatPostConversationsRequest(
-                post_token=chat.post.token,
-                endpoint=settings.APP_BASE_URL + reverse("receive_notify"),
-                identification_key=signer.sign(str(chat.id)),
-            ), )
+            if oauth_session.verifier_id:
+                query_string = urlencode({
+                    "verifier_id": oauth_session.verifier_id
+                    })
+                url = f"{url}?{query_string}"
 
-            kenar_client.chat.set_notify_chat_post_conversations(
-                access_token=access_token_response.access_token,
-                data=SetNotifyChatPostConversationsRequest(
-                    post_token=chat.post.token,
-                    endpoint=settings.APP_BASE_URL + reverse("receive_notify"),
-                    identification_key=signer.sign(str(chat.id)),
-                ),
-            )
-            base_url = reverse("fake-view")
-            query_string = urlencode({
-                "state": oauth_session.state,
-                "access_token": oauth.access_token
-                })
-            url = f"{base_url}?{query_string}"
-            logger.info("sep01 else callback")
             return redirect(url)
 
     except httpx.HTTPStatusError as http_err:
@@ -128,6 +116,49 @@ def oauth_callback(request):
         logger.error(f"An error occurred: {err}")
         return HttpResponseServerError("Internal server error")
 
+
+# @api_view(["GET"])
+# def oauth_buyer_callback(request, post_token, verifier_id):
+#     req_state = request.query_params.get("state")
+#     authorization_code = request.query_params.get("code")
+#
+#     if not authorization_code or not req_state:
+#         return HttpResponseBadRequest("missing state or authorization code")
+#
+#     try:
+#         oauth_session = OAuthSession(**request.session.get(settings.OAUTH_SESSION_KEY))
+#     except pydantic.ValidationError as e:
+#         logger.error(e)
+#         return HttpResponseForbidden("permission denied")
+#
+#     if req_state != oauth_session.get_state():
+#         return HttpResponseForbidden("permission denied")
+#
+#     kenar_client = get_divar_kenar_client()
+#     session_key = request.session.session_key
+#
+#     try:
+#         access_token_response = kenar_client.oauth.get_access_token(authorization_code)
+#
+#         if OAuth.objects.filter(session_id=session_key).exists():
+#             OAuth.objects.get(session_id=session_key).delete()
+#
+#         oauth = OAuth.objects.create(
+#             session_id=session_key,
+#             access_token=access_token_response.access_token,
+#             expires_in=timezone.now() + timedelta(seconds=access_token_response.expires_in),
+#         )
+#         phone = kenar_client.finder.get_user(data=GetUserRequest(), access_token=oauth.access_token).phone_numbers[0]
+#         accounts_models.User.objects.get_or_create(divar_user_phone=phone, oauth=oauth)
+#
+#         redirect_url = f"{settings.FRONT_END_URL}matching/select_verifier/{verifier_id}"
+#         return redirect(redirect_url)
+#     except httpx.HTTPStatusError as http_err:
+#         logger.error(f"HTTP error occurred: {http_err}: {http_err.response.text}")
+#         return HttpResponseServerError("Internal server error")
+#     except Exception as err:
+#         logger.error(f"An error occurred: {err}")
+#         return HttpResponseServerError("Internal server error")
 
 class FakeView(APIView):
     def get(self, request):
