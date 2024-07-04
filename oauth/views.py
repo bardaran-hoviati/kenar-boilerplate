@@ -173,12 +173,12 @@ class FakeView(APIView):
 
         event_row = EventRow(
             title="تایتل",
-            subtitle="سابتایتل",
+            subtitle="سابتایsssتل",
             has_indicator=False,
             #image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoY3USrSPdY4jq7pzu9nYNPWwuxEv0Dh_K_w&s",
             label="لیبل",
             has_divider=True,
-            link="https://salsa.darkube.app",
+            link="https://salsa.darkube.app/matching/setVerifier/1/2",
             padded=True,
             icon=Icon(icon_name=IconName.ADD),
         )
@@ -235,16 +235,16 @@ class FakeView(APIView):
         )
 
         selector_row = SelectorRow(
-            title="این یک ویجت سلکتور میباشد",
+            title="این یک ویssجت سلکتور میباشد",
             has_divider=True,
             has_arrow=True,
             icon=Icon(icon_name=IconName.INFO),
-            link="https://salsa.darkube.app",
+            link="https://salsa.darkube.app/matching/setVerifier/1/2",
         )
 
         wide_button_bar = WideButtonBar(
             button=WideButtonBar.Button(
-                title="به سمت سایت شما", link="https://salsa.darkube.app/matching/setVerifier/1/2"
+                title="به سمت سایت333 شما", link="https://salsa.darkube.app/matching/setVerifier/1/2"
             ),
         )
         resp = kenar_client.addon.create_post_addon(
