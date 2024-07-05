@@ -147,7 +147,7 @@ def add_addons(access_token, post_token, verifiers):
     addons = []
     kenar_client = get_divar_kenar_client()
     for i in range(min(3, len(verifiers))):
-        print(verifiers[i].profile_photo)
+        print(str(verifiers[i].profile_photo) + "///////////////////////////////////////////")
         addons.append(EventRow(
             title=f"{verifiers[i].firstname} {verifiers[i].lastname}",
             subtitle=str(verifiers[i].rate),
