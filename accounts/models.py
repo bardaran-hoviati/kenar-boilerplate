@@ -36,7 +36,7 @@ class Verifier(TimestampModel):
 class Post(TimestampModel):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     divar_post_id = models.CharField(max_length=50, unique=True)
-    selected_verifiers = models.ManyToManyField(Verifier)
+    selected_verifiers = models.ManyToManyField(Verifier, null=True, blank=True)
 
     def __str__(self):
         return f'Post: {self.divar_post_id} by {self.seller.user.username}'
