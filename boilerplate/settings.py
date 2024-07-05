@@ -30,6 +30,10 @@ APP_BASE_URL = "https://" + APP_HOST
 
 ALLOWED_HOSTS = [APP_HOST, "localhost", "127.0.0.1", "*"]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://shalsha.darkube.app",
+    "https://shalsha.darkube.app",
+]
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_ALL_ORIGINS =  True
@@ -62,9 +66,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
