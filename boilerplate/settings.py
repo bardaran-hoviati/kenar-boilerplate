@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from corsheaders.defaults import default_headers
+
 
 from kenar import ClientConfig
 
@@ -36,9 +38,20 @@ CORS_ALLOWED_ORIGINS = [
     "http://shalsha.darkube.app",
     "https://shalsha.darkube.app",
 ]
-# CORS_ORIGIN_ALLOW_ALL = True
-#
-# CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # LOCAL
+    r".*"
+]
+
+CORS_EXPOSE_HEADERS = ["Access-Control-Allow-Origin", "X-Location"]
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "user-hash",
+]
+
 
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
 DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
