@@ -34,11 +34,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://shalsha.darkube.app",
     "https://shalsha.darkube.app",
 ]
-CORS_ORIGIN_ALLOW_ALL = True
-
-CORS_ALLOW_ALL_ORIGINS =  True
-
-
+# CORS_ORIGIN_ALLOW_ALL = True
+#
+# CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
 DATABASE_PORT = os.getenv("DATABASE_PORT", "5432")
@@ -169,4 +167,3 @@ try:
     from .local_settings import *
 except ImportError:
     pass
-
