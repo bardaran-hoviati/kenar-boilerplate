@@ -113,8 +113,7 @@ def oauth_callback(request):
                     })
             else:
                 query_string = urlencode({
-                    "user_id": user.id,
-                    "verifier_id": oauth_session.verifier_id
+                    "user_id": user.id
                 })
 
             url = f"{url}?{query_string}"
