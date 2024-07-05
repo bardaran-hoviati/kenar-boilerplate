@@ -147,6 +147,7 @@ def add_addons(access_token, post_token, verifiers):
     addons = []
     kenar_client = get_divar_kenar_client()
     for i in range(min(3, len(verifiers))):
+        print(verifiers[i].profile_photo)
         addons.append(EventRow(
             title=f"{verifiers[i].firstname} {verifiers[i].lastname}",
             subtitle=str(verifiers[i].rate),
@@ -155,7 +156,7 @@ def add_addons(access_token, post_token, verifiers):
             has_divider=True,
             link=f"https://salsa.darkube.app/accounts/?post_token={post_token}&verifier_id={verifiers[i].pk}",
             padded=True,
-            image_url= verifiers[i].profile_photo,
+            image_url= str(verifiers[i].profile_photo) if str(verifiers[i].profile_photo) else "",
             icon=Icon(icon_name=IconName.ADD),
         )
         )
