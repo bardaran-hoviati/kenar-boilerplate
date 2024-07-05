@@ -146,8 +146,10 @@ class SelectVerifierView(APIView):
 def add_addons(access_token, post_token, verifiers):
     addons = []
     kenar_client = get_divar_kenar_client()
+    logger.error("GHHHHHHHHAAAAABBBBBBBBLLLLLLLLLLL FOR")
+
     for i in range(min(3, len(verifiers))):
-        logger.info(str(verifiers[i].profile_photo) + "///////////////////////////////////////////")
+        logger.error(str(verifiers[i].profile_photo) + "///////////////////////////////////////////")
         addons.append(EventRow(
             title=f"{verifiers[i].firstname} {verifiers[i].lastname}",
             subtitle=str(verifiers[i].rate),
