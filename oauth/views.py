@@ -96,7 +96,6 @@ def oauth_callback(request):
                 accounts_models.Seller.objects.create(user=user)
             accounts_models.Post.objects.get_or_create(divar_post_id=post.token, defaults={"seller": user.seller})
             url = f"{settings.FRONT_END_URL}set-verifiers/{post.token}"
-            url = f"{settings.FRONT_END_URL}select-verifier/"
             return redirect(url)
 
         elif oauth_session.type == OAuthSessionType.PHONE.value:
