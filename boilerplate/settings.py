@@ -47,7 +47,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 CORS_EXPOSE_HEADERS = ["Access-Control-Allow-Origin", "X-Location"]
 
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "user-hash",
 ]
