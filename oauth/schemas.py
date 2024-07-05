@@ -9,6 +9,7 @@ from pydantic.networks import AnyUrl
 class OAuthSessionType(Enum):
     CHAT = "CHAT"
     POST = "POST"
+    PHONE = "PHONE"
 
 
 class OAuthSession(BaseModel):
@@ -17,6 +18,7 @@ class OAuthSession(BaseModel):
     callback_url: Optional[AnyUrl] = None
     post_token: str
     chat_id: Optional[UUID] = None
+    verifier_id: Optional[int] = 0
 
     def get_state(self) -> str:
         return str(self.state)

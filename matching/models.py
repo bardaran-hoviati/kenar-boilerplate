@@ -13,7 +13,7 @@ class VerificationRequest(accounts_models.TimestampModel):
     verifier = models.ForeignKey(to=accounts_models.Verifier, on_delete=models.CASCADE)
     post = models.ForeignKey(to=accounts_models.Post, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.SmallIntegerField(choices=Status.choices)
+    status = models.SmallIntegerField(choices=Status.choices, default=Status.BUYER_CLAIMED.value)
 
     def __str__(self):
         return f'VerificationRequest: {self.id}'
