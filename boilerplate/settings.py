@@ -30,6 +30,8 @@ APP_BASE_URL = "https://" + APP_HOST
 
 ALLOWED_HOSTS = [APP_HOST, "localhost", "127.0.0.1", "*"]
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://shalsha.darkube.app",
     "https://shalsha.darkube.app",
