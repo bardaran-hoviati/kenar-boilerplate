@@ -30,7 +30,10 @@ APP_BASE_URL = "https://" + APP_HOST
 
 ALLOWED_HOSTS = [APP_HOST, "localhost", "127.0.0.1", "*"]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 CORS_ALLOW_ALL_ORIGINS =  True
+
 
 
 DATABASE_HOST = os.getenv("DATABASE_HOST", "localhost")
@@ -50,7 +53,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
-
     "addon",
     "chat",
     "oauth",
